@@ -1,0 +1,23 @@
+﻿# --- 核心框架与服务器 ---
+fastapi          # Web 框架本身
+uvicorn[standard]  # 运行 FastAPI 的 ASGI 服务器, [standard] 包含高性能的依赖
+
+# --- 数据库 (ORM) ---
+sqlalchemy       # 数据库工具包 (ORM)，用于 models.py 和 crud.py
+
+# --- 数据库驱动 (根据你的选择，取消注释其中一个) ---
+# psycopg2-binary  # 用于 PostgreSQL 数据库
+mysqlclient      # 用于 MySQL / MariaDB 数据库
+# (注意: SQLite 是 Python 内置的，不需要单独安装驱动)
+
+# --- 安全 ---
+bcrypt             # 用于哈希和验证密码 (在 security.py 中使用)
+python-jose[cryptography] # 用于创建和验证 JWT (登录 Token)
+
+# --- 文件与配置 ---
+python-multipart   # FastAPI 需要这个库来处理文件上传 (表单数据)
+python-dotenv      # 用于读取 .env 配置文件 (在 config.py 中使用)
+
+# --- (可选) 邮件功能 ---
+# python-multipart # (如果已安装则忽略)
+# aiofiles         # 异步文件操作 (在 FastAPI 中很有用)
