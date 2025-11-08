@@ -1,23 +1,38 @@
-﻿# --- 核心框架与服务器 ---
-fastapi          # Web 框架本身
-uvicorn[standard]  # 运行 FastAPI 的 ASGI 服务器, [standard] 包含高性能的依赖
-
-# --- 数据库 (ORM) ---
-sqlalchemy       # 数据库工具包 (ORM)，用于 models.py 和 crud.py
-
-# --- 数据库驱动 (根据你的选择，取消注释其中一个) ---
-# psycopg2-binary  # 用于 PostgreSQL 数据库
-mysqlclient      # 用于 MySQL / MariaDB 数据库
-# (注意: SQLite 是 Python 内置的，不需要单独安装驱动)
-
-# --- 安全 ---
-bcrypt             # 用于哈希和验证密码 (在 security.py 中使用)
-python-jose[cryptography] # 用于创建和验证 JWT (登录 Token)
-
-# --- 文件与配置 ---
-python-multipart   # FastAPI 需要这个库来处理文件上传 (表单数据)
-python-dotenv      # 用于读取 .env 配置文件 (在 config.py 中使用)
-
-# --- (可选) 邮件功能 ---
-# python-multipart # (如果已安装则忽略)
-# aiofiles         # 异步文件操作 (在 FastAPI 中很有用)
+﻿annotated-doc==0.0.3
+annotated-types==0.7.0
+anyio==4.11.0
+bcrypt==3.2.0
+cffi==2.0.0
+click==8.3.0
+colorama==0.4.6
+cryptography==46.0.3
+ecdsa==0.19.1
+exceptiongroup==1.3.0
+fastapi==0.121.0
+greenlet==3.2.4
+h11==0.16.0
+httptools==0.7.1
+idna==3.11
+mysqlclient==2.2.7
+passlib==1.7.4
+pip==22.2.2
+pyasn1==0.6.1
+pycparser==2.23
+pydantic==2.12.4
+pydantic-settings==2.11.0
+pydantic_core==2.41.5
+python-dotenv==1.2.1
+python-jose==3.5.0
+python-multipart==0.0.20
+PyYAML==6.0.3
+rsa==4.9.1
+setuptools==63.2.0
+six==1.17.0
+sniffio==1.3.1
+SQLAlchemy==2.0.44
+starlette==0.49.3
+typing-inspection==0.4.2
+typing_extensions==4.15.0
+uvicorn==0.38.0
+watchfiles==1.1.1
+websockets==15.0.1

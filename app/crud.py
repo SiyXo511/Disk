@@ -1,0 +1,21 @@
+from  sqlalchemy.orm import session
+from app import schemas, models
+from app.security import get_password_hash
+
+def get_file_from_unique_id(db: session, unique_id: str):
+    return db.query(models.File).filter(models.File.unique_id == unique_id).first()
+
+def get_user_by_username(db: session, username: str):
+    return db.query(models.User).filter(models.User.username == username).first()
+
+def create_user(db: session, user: schemas.UserCreate):
+    hashed_password = get_password_hash(user.password)
+    db_user = models.User(
+        username=user.username, 
+        password_hash=hashed_password
+    )
+
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
