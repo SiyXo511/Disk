@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter, Depends, HTTPException, status, 
     UploadFile, File as FastAPIFile
 )
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 import uuid
 import shutil  
@@ -55,6 +56,31 @@ def upload_file(
 
     db_file = crud.create_file(db, file_data)
     return db_file
+
+@router.get(
+    "/download/{file_unique_id}"
+)
+async def download_file(
+    file_unique_id: str,
+    db: Session = Depends(get_db)
+):
+    db_file = crud.get_file_from_unique_id(db, file_unique_id)
+    if db_file is None:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    file_path = Path(db_file.stored_path)
+    if not file_path.is_file():
+        raise HTTPException(status_code=500, detail="File not found on disk")
+
+    download_name = db_file.original_filename
+    media_type = db_file.mime_type
+
+    return FileResponse(
+        path = file_path,
+        filename = download_name,
+        media_type = media_type,
+        content_disposition_type = "inline"
+    )
 
 @router.get(
     "/view/{file_unique_id}",
