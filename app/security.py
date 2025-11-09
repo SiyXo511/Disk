@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from loguru import logger
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from app.config import settings  # 导入我们的配置
@@ -42,17 +43,21 @@ def get_current_user(
     token: str = Depends(oauth2_scheme), 
     db: Session = Depends(get_db)
 ) -> models.User:
+    
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-
+    
     token_data = decode_access_token(token)
     if token_data is None or token_data.username is None:
+        logger.warning("Token 解码失败或 Token_data 中没有 'username'") # <-- 2. 添加日志
         raise credentials_exception
-
-    user = crud.get_user_by_username(db, token_data.username)
+        
+    user = crud.get_user_by_username(db, username=token_data.username)
     if user is None:
+        logger.warning(f"Token 有效，但用户 '{token_data.username}' 在数据库中不存在") # <-- 3. 添加日志
         raise credentials_exception
+        
     return user

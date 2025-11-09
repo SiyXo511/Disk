@@ -12,6 +12,7 @@ database.db
 .Python
 env/
 .venv/
+logs/
 deskassistant-env/
 build/
 develop-eggs/
