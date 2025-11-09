@@ -2,7 +2,11 @@ from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from app.config import settings  # 导入我们的配置
-from app import schemas
+from app import schemas, models, crud
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from app.database import get_db
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -31,3 +35,24 @@ def decode_access_token(token: str) -> schemas.TokenData | None:
         return schemas.TokenData(username=username)
     except JWTError:
         return None
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
+
+def get_current_user(
+    token: str = Depends(oauth2_scheme), 
+    db: Session = Depends(get_db)
+) -> models.User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    token_data = decode_access_token(token)
+    if token_data is None or token_data.username is None:
+        raise credentials_exception
+
+    user = crud.get_user_by_username(db, token_data.username)
+    if user is None:
+        raise credentials_exception
+    return user
