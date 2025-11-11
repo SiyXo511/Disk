@@ -2,22 +2,30 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
     <title>登录</title>
 </head>
 <body>
-    <h2>登录到文件上传系统</h2>
-    <form id="loginForm">
-        <div>
-            <label for="username">用户名:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-        <div>
-            <label for="password">密码:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <button type="submit">登录</button>
-    </form>
-    <p id="loginMessage"></p>
+    <main class="container" style="max-width: 600px; margin-top: 5vh;">
+        <article>
+            <h1 style="text-align: center;">登录</h1>
+            <h2 style="text-align: center;">安全文件上传系统</h2>
+            
+            <form id="loginForm">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" placeholder="输入你的用户名" required>
+                
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" placeholder="输入你的密码" required>
+                
+                <button type="submit">登录</button>
+            </form>
+            
+            <p id="loginMessage" aria-live="polite"></p>
+
+        </article>
+    </main>
 
     <script src="/static/js/app.js"></script>
 </body>

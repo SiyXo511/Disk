@@ -2,17 +2,64 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>文件上传</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
+    <title>文件管理</title>
+    <style>
+        /* (可选) 一些微调 */
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--pico-muted-border-color);
+        }
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        .file-info {
+            word-break: break-all; /* 防止长文件名撑破布局 */
+        }
+        .file-actions button {
+            margin-left: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h2>上传新文件</h2>
-    <form id="uploadForm">
-        <input type="file" id="fileInput" required>
-        <button type="submit">上传</button>
-    </form>
-    <hr>
-    <h3>上传结果:</h3>
-    <div id="uploadResult"></div>
+    <main class="container">
+        <nav>
+            <ul>
+                <li><strong>文件管理系统</strong></li>
+            </ul>
+            <ul>
+                <li><a href="#" id="logoutButton" role="button" class="secondary outline">退出登录</a></li>
+            </ul>
+        </nav>
+
+        <article>
+            <header><h2>上传新文件</h2></header>
+            <form id="uploadForm">
+                <input type="file" id="fileInput" required>
+                <button type="submit" id="uploadButton">
+                    <span aria-busy="false">上传</span>
+                </button>
+            </form>
+            <div id="uploadResult"></div>
+        </article>
+
+        <article>
+            <header>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>我的文件</h2>
+                    <button id="refreshButton" aria-busy="false" class="outline" style="max-width: 150px;">刷新列表</button>
+                </div>
+            </header>
+            
+            <div id="fileListContainer">
+                <p>正在加载文件...</p>
+            </div>
+        </article>
+    </main>
 
     <script src="/static/js/app.js"></script>
 </body>
