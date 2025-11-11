@@ -2,7 +2,7 @@ from fastapi import (
     APIRouter, Depends, HTTPException, status, 
     UploadFile, File as FastAPIFile
 )
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from loguru import logger
 from sqlalchemy.orm import Session
 import uuid
@@ -69,8 +69,51 @@ def upload_file(
     
     return db_file
 
+@router.get("/", response_model=list[schemas.File])
+def list_my_files(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    logger.info(f"用户 '{current_user.username}' (ID: {current_user.id}) 请求查看自己的文件列表。")
+    files = crud.get_files_by_user_id(db=db, user_id=current_user.id)
+    return files
 
-# --- 3. 公开的文件下载/查看 API --- (我把编号改了，这个是新的)
+@router.delete("/{file_unique_id}")
+def delete_file(
+    file_unique_id: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    logger.info(f"用户 '{current_user.username}' (ID: {current_user.id}) 请求删除文件 (UUID: {file_unique_id})。")
+
+    db_file = crud.get_file_from_unique_id(db, unique_id=file_unique_id)
+    if db_file is None:
+        logger.warning(f"删除失败：文件在数据库中未找到 (UUID: {file_unique_id})")
+        raise HTTPException(status_code=404, detail="File not found")
+
+    if db_file.uploader_id != current_user.id:
+        logger.error(f"删除失败：用户 '{current_user.username}' (ID: {current_user.id}) 尝试删除不属于他的文件 (UUID: {file_unique_id})")
+        raise HTTPException(status_code=403, detail="Not authorized to delete this file")
+
+    try:
+        file_path = Path(db_file.stored_path)
+        file_path.unlink()
+        logger.info(f"已从磁盘删除: {file_path}")
+    except FileNotFoundError:
+        logger.warning(f"文件在磁盘上已丢失 (路径: {db_file.stored_path})，但仍会从数据库中删除")
+    except Exception as e:
+        logger.error(f"从磁盘删除文件时出错: {e}")
+        raise HTTPException(status_code=500, detail=f"Could not delete file from disk: {e}")
+
+    db.delete(db_file)
+    db.commit()
+
+    logger.success(f"文件 (UUID: {file_unique_id}) 已被用户 '{current_user.username}' 成功删除")
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"message": "File deleted successfully"}
+    )
+    
 @router.get("/download/{file_unique_id}")
 async def download_file(
     file_unique_id: str, 
@@ -78,7 +121,7 @@ async def download_file(
 ):
     logger.info(f"公开文件访问尝试 (UUID: {file_unique_id})")
     
-    db_file = crud.get_file_by_unique_id(db, unique_id=file_unique_id)
+    db_file = crud.get_file_from_unique_id(db, unique_id=file_unique_id)
     
     if db_file is None:
         logger.warning(f"访问失败：文件在数据库中未找到 (UUID: {file_unique_id})")

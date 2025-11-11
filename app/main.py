@@ -1,10 +1,17 @@
+import sys
+import os
+import uvicorn
+
+# 将项目根目录添加到 sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from fastapi import FastAPI
 from app.routers import files, users
 from app import models
 from app.database import engine
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
-from .logging_config import setup_logging
+from app.logging_config import setup_logging
 
 setup_logging()
 

@@ -34,3 +34,5 @@ def create_user(db: session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+def get_files_by_user_id(db: session, user_id: int):
+    return db.query(models.File).filter(models.File.uploader_id == user_id).order_by(models.File.created_at.desc()).all()
